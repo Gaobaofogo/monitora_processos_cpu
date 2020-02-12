@@ -1,0 +1,7 @@
+/TODO:
+- Get information about top
+- Parse and get data
+- Export via API or graphql using http protocol
+  . Obs.: In this part, i will create a process who mantain the current process list state of top and 
+          periodically(1000 milissecond) actualize this process. Every time when front end wants to capture
+          new data, will ask to this process for the actual state.
