@@ -16,10 +16,10 @@ defmodule CpuDataTest do
   end
 
   test "constructor of Process" do
-    my_process = CpuData.Process.create_process(process_str())
+    my_process = CpuData.TopLog.create_process(process_str())
     assert Map.equal?(
       my_process,
-      %CpuData.Process{
+      %CpuData.TopLog{
         pid: "6271",
         user: "user",
         cpu: "12,5",
@@ -31,14 +31,15 @@ defmodule CpuDataTest do
   end
 
   test "parse of list process" do
-    processes = [CpuData.Process.create_process(process_str())]
+    processes = [CpuData.TopLog.create_process(process_str())]
     result_func = parse_information([process_str()])
     assert processes == result_func
   end
 
   test "insert processes on state", %{agent: agent} do
-    process = CpuData.Process.create_process(process_str())
-    CpuData.update_processes(agent, [process])
+    process = CpuData.TopLog.create_process(process_str())
+    IO.puts process
+    CpuData.update_processes([process], agent)
     processes_state = CpuData.get_processes(agent)
     assert length(processes_state) == 1
   end
