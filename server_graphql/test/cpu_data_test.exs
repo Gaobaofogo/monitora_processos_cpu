@@ -1,9 +1,9 @@
 defmodule CpuDataTest do
   use ExUnit.Case, async: true
-  import CpuData
+  import ServerGraphql.CpuData
 
   setup do
-    {:ok, agent} = CpuData.start_link()
+    {:ok, agent} = ServerGraphql.CpuData.start_link()
     %{agent: agent}
   end
 
@@ -16,10 +16,10 @@ defmodule CpuDataTest do
   end
 
   test "constructor of Process" do
-    my_process = CpuData.TopLog.create_process(process_str())
+    my_process = ServerGraphql.CpuData.TopLog.create_process(process_str())
     assert Map.equal?(
       my_process,
-      %CpuData.TopLog{
+      %ServerGraphql.CpuData.TopLog{
         pid: "6271",
         user: "user",
         cpu: "12,5",
@@ -31,15 +31,16 @@ defmodule CpuDataTest do
   end
 
   test "parse of list process" do
-    processes = [CpuData.TopLog.create_process(process_str())]
+    processes = [ServerGraphql.CpuData.TopLog.create_process(process_str())]
     result_func = parse_information([process_str()])
     assert processes == result_func
   end
 
-  test "insert processes on state", %{agent: agent} do
-    process = CpuData.TopLog.create_process(process_str())
-    CpuData.update_processes([process], agent)
-    processes_state = CpuData.get_processes(agent)
+  test "insert processes on state" do
+    process = ServerGraphql.CpuData.TopLog.create_process(process_str())
+    ServerGraphql.CpuData.update_processes([process])
+    processes_state = ServerGraphql.CpuData.get_processes()
+
     assert length(processes_state) == 1
   end
 end

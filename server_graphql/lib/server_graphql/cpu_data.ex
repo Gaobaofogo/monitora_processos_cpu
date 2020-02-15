@@ -1,4 +1,4 @@
-defmodule CpuData do
+defmodule ServerGraphql.CpuData do
   @moduledoc """
   Get data from CPU use
   """
@@ -27,8 +27,8 @@ defmodule CpuData do
   @doc """
   Init the state process
   """
-  def start_link(_options \\ %{}) do
-    Agent.start_link(fn -> [] end)
+  def start_link(initial_state \\ []) do
+    Agent.start_link(fn -> automatic_update_state(initial_state) end, name: __MODULE__)
   end
 
   @doc """
@@ -38,31 +38,25 @@ defmodule CpuData do
     spawn(fn -> loop(agent) end)
   end
 
-  def test_state do
-    {:ok, agent} = start_link()
-    automatic_update_state(agent)
-    agent
-  end
-
   @doc """
   Update state every half second
   """
   def loop(agent) do
     Process.sleep(500)
     formated_data()
-    |> update_processes(agent)
+    |> update_processes
     loop(agent)
   end
 
   @doc """
   Update the state of process
   """
-  def update_processes(list_processes, agent) do
-    Agent.update(agent, fn _actual_state -> list_processes end)
+  def update_processes(list_processes) do
+    Agent.update(__MODULE__, fn _actual_state -> list_processes end)
   end
 
-  def get_processes(agent) do
-    Agent.get(agent, fn list_state -> list_state end  )
+  def get_processes() do
+    Agent.get(__MODULE__, fn list_state -> list_state end)
   end
 
   @doc """
